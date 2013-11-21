@@ -1327,7 +1327,9 @@ value."
 
 Either a string containing the name or the path of the
 executable, or nil to use the default executable from the syntax
-checker declaration." symbol)
+checker declaration.
+
+The default executable is %S." symbol (car command))
          :type '(choice (const :tag "Default executable" nil)
                         (string :tag "Name or path"))
          :group 'flycheck-executables
@@ -1982,7 +1984,7 @@ Pop up a help buffer with the documentation of CHECKER."
                      (called-interactively-p 'interactive))
     (save-excursion
       (with-help-window (help-buffer)
-        (let ((executable (flycheck-checker-executable checker))
+        (let ((executable (car (get checker :flycheck-command)))
               (filename (flycheck-checker-file checker))
               (modes (flycheck-checker-modes checker))
               (config-file-var (flycheck-checker-config-file-var checker))
@@ -2009,6 +2011,9 @@ Pop up a help buffer with the documentation of CHECKER."
               (goto-char (point-min))
               (forward-paragraph)
               (fill-region-as-paragraph (point) (point-max))))
+          (princ "\n\n")
+          (princ (format "  The executable can be overridden with `%s'."
+                         (get checker :flycheck-executable-var)))
           (princ "\n")
           (when option-vars
             (princ "\n  This syntax checker can be configured with these options:\n\n")
